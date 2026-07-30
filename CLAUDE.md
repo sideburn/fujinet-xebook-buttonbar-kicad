@@ -15,10 +15,9 @@ fabricated once with a 3-pin connector for the FujiNet buttons; that connector h
 been upgraded to 4 pins (see "Connector fix" below) to add a proper ground return, ahead
 of the next fab run.
 
-Status: schematic and PCB fixed and verified (ERC clean, DRC clean, no shorts). **Not yet
-re-routed** for the new 4th pin — the three FujiNet button traces and the new ground pad
-need fresh copper from J2 out to the existing routing; the user routes copper by hand in
-the KiCad GUI. Not yet re-fabricated with the fix.
+Status: schematic and PCB fixed, routed, and verified (`kicad-cli pcb drc`, full +
+`--schematic-parity`: 0 unconnected, 0 shorts). Fab package (gerbers, drill, JLCPCB
+BOM/CPL) generated in `Fab/`. Not yet re-fabricated with the fix.
 
 ## Interface contract with the main board
 
@@ -88,3 +87,22 @@ Same as the main board:
   intentional, presumably user-made labeling choice.
 - No original DipTrace netlist exists for this board (unlike the main board) — its ground
   truth is the interface contract table above.
+
+## Gotcha: `"-"`/`"+"` reference designators break Specctra DSN export
+
+SW1 and SW2's PCB `Reference` text is literally `"-"` and `"+"` (see functional-label
+note above). This is fine for KiCad itself (confirmed via `kicad-cli pcb export
+ipcd356` — the underlying pad-to-net data is correct), but it breaks autorouting via
+Specctra DSN (e.g. the Freerouting plugin): DSN pin identifiers are formatted as
+`refdes-pinnumber`, and the file's own coordinate fields use bare `+`/`-` as sign
+prefixes throughout. A refdes that IS `-` or `+` produces a token indistinguishable from
+part of a signed number, so the exporter/importer silently drops that pin's ratsnest
+instead of erroring — Freerouting's routed-board preview won't even show an airwire for
+it, and will report the board fully routed while that connection stays open. This only
+hits SW1/SW2; the other functional labels ("swap", "bt", "rst", "vol", "fuji") are plain
+words and export fine.
+
+The user has chosen to keep `-`/`+` as-is rather than rename them — if autorouting via
+DSN/Freerouting, manually verify (or hand-route) SW1/SW2's connections afterward, and
+always confirm the final result with `kicad-cli pcb drc` rather than trusting the
+router's own "fully routed" report.

@@ -1,2 +1,2 @@
 "Designator","Value","Footprint","Qty","LCSC"
-"SW1-SW4,SW6","SW_Push","Button_Switch_SMD:SW_SPST_TL3342","5",""
+"VolDWN1,VolUP1,swap1,bt1,rst1","SW_Push","Button_Switch_SMD:SW_SPST_TL3342","5",""
