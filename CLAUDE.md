@@ -19,6 +19,13 @@ Status: schematic and PCB fixed, routed, and verified (`kicad-cli pcb drc`, full
 `--schematic-parity`: 0 unconnected, 0 shorts). Fab package (gerbers, drill, JLCPCB
 BOM/CPL) generated in `Fab/`. Not yet re-fabricated with the fix.
 
+A logo was imported to `B.SilkS` on 2026-08-02 as 68 `gr_poly` outlines (source artwork in
+`Graphics/XEBOOKButtonBarLogo.ai`/`.svg`; the two board screenshots moved from `images/` to
+`Graphics/` at the same time). `Fab/` was regenerated for it and, timestamps aside,
+**`B_Silkscreen.gbo` is the only output that changed** — copper, mask, paste, drill and
+Edge.Cuts are byte-identical, and footprints/tracks/vias/outline are untouched. Export
+without `--subtract-soldermask` (`%LPC`=0), same as the SD board.
+
 ## Interface contract with the main board
 
 Two connectors carry all five buttons off-board via cables, soldered directly to
